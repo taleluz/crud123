@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+     <!-- GUI START -->
+     email<input id="email">
+    username<input id="username">
+    <button onclick="addData()">Add data</button>
+    <div id="display"></div>
+
+     <!-- GUI END-->
+    <script src="https://unpkg.com/axios@1.1.2/dist/axios.min.js"></script>
+    <script>
+        const MY_SERVER ="http://127.0.0.1:5000/students" //flask
+        // const MY_SERVER ="https://jsonplaceholder.typicode.com/users/" //json place holder
+        // const MY_SERVER = "http://localhost:3000/students/" // fake json server
+        // const MY_SERVER ="http://localhost:5000/students" //my flask python
+
+        const loadData = async () => {
+            // get (READ)
+            const res = await axios.get(MY_SERVER) //get data from server
+            display.innerHTML = res.data.map(stu => `
+            <div><h2>
+            <button onclick='updStudent(${stu.id})'>upddd</button>
+            <button onclick='delStudent(${stu.id})'>del - ${stu.id}</button>
+            name: ${stu.name} , city: ${stu.city} ,id:${stu.id}</h2></div><hr>`).join("") //build display
+            console.log(res.data) //display date  in console
+        }
+
+        loadData()
+
+        // post (Create)
+        const addData =async () => {
+           await axios.post(MY_SERVER+"/", { city: username.value, name: email.value }).then((res) => console.log(res.data))
+            loadData()
+        }
+
+        //delete (delete)
+        const delStudent =async (id) => {
+            console.log(id)
+            await axios.delete(MY_SERVER +"/" + id).then((res) => console.log(res.data))
+            loadData()
+        }
+
+        const updStudent =async (id) => {
+            // put (update)
+            const res=await axios.put(MY_SERVER +"/"+ id,{ city: username.value, name: email.value })
+            console.log(res)
+            loadData()
+        }
+    </script>
+</body>
+</html>
